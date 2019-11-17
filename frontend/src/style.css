@@ -1,0 +1,189 @@
+html, body {
+    height: 100% !important;
+}
+
+#root {
+    height: 100%;
+    display: flex;
+}
+
+.row {
+    width: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    height: 100%;
+}
+
+.chat {
+    height: 90% !important;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 100%;
+}
+
+.chatInput {
+    width: 90% !important;
+    margin: 0 auto !important;
+}
+
+.chatArea {
+    width: 90%;
+    margin: 0 auto;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    border-bottom: none;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.outgoing-msg {
+    align-self: flex-end;
+    margin-right: 30px;
+}
+
+.incoming-msg {
+    margin-left: 30px;
+}
+
+.outgoing-msg, .incoming-msg {
+    padding: 10px 20px;
+    width: 45%;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.outgoing-msg-user, .outgoing-msg-date, .incoming-msg-user, .incoming-msg-date {
+    font-size: 12px;
+    padding-bottom: 5px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.incoming-msg-user, .incoming-msg-date {
+    justify-content: flex-start;
+}
+
+.outgoing-msg-detail {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chat-msg {
+    margin-right: 10px;
+}
+
+.chat-msg-left {
+    margin-right: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.membership {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 50px;
+    background: #ced4da;
+    padding: 50px;
+    border-radius: 5px;
+    height: 435px;
+}
+
+.login-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-text {
+    width: 50%;
+    margin-right: 15px;
+}
+
+.error-danger {
+    margin: 0px;
+}
+
+.mainChat {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.sideByside {
+    display: flex;
+}
+
+.Encryption {
+    display: flex;
+    flex-direction: column;
+}
+
+.Encryption>div {
+    padding-bottom: 5px;
+}
+
+.lobby {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+}
+
+.lobbyEncryptionForm, .lobbylogin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    height: 100%;
+}
+
+.mainEncryption {
+    margin-left: 20px;
+}
+
+.LobbyRegister, .LobbyLogin {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    height: 400px;
+    padding: 0px 20px;
+    margin-left: 50px;
+}
+
+.lobbylogin {
+    flex-direction: column;
+}
+
+.loobyLabel {
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.lobbyFormGroup {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.lobbyFormGroup button {
+    margin-top: .5rem;
+}
