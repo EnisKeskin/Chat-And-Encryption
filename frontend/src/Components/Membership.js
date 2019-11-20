@@ -118,7 +118,7 @@ class Membership extends Component {
         return (
             <div className="container">
                 {this.state.redirect ?
-                    <Redirect to='/Chat' />
+                    <Redirect to='/Lobby' />
                     :
                     <div className="membership">
 

@@ -14,6 +14,7 @@ class Chat extends Component {
             getMessage: {},
             redirect: false,
             userId: '',
+            props
         }
     }
     componentDidMount() {
@@ -28,23 +29,23 @@ class Chat extends Component {
                     redirect: true,
                 });
             });
-            io.emit('allMessage');
+            
+            // io.emit('allMessage');
 
-            io.on('returnedMessage', (chat) => {
-                this.getMessage = chat.messageInfo
-                if (chat.userId == null) {
-                    this.setState({
-                        getMessage: this.getMessage
-                    });
-
-                } else {
-                    this.setState({
-                        userId: chat.userId,
-                        getMessage: this.getMessage
-                    });
-                }
-                this.scrollLocation();
-            });
+            // io.on('returnedMessage', (chat) => {
+            //     this.getMessage = chat.messageInfo
+            //     if (chat.userId == null) {
+            //         this.setState({
+            //             getMessage: this.getMessage
+            //         });
+            //     } else {
+            //         this.setState({
+            //             userId: chat.userId,
+            //             getMessage: this.getMessage
+            //         });
+            //     }
+            //     this.scrollLocation();
+            // });
 
         } else {
             this.setState({
@@ -75,7 +76,6 @@ class Chat extends Component {
 
     chatMessageShow = () => {
         const message = this.state.getMessage;
-        console.log(message)
         const chatMessage = [];
         if (!this.isEmpty(message)) {
             if (message.length > 1) {

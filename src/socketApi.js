@@ -110,12 +110,34 @@ Io.of('/Chat').use((socket, next) => {
         }
     });
     socket.on("CreateChatRoom", (ChatRoom) => {
-        socket.join(ChatRoom.name, () => {
-            const roomName = Object.keys(socket.rooms)[0];
-            const userId = Object.keys(socket.rooms)[1];
-            console.log(Object.keys(socket.rooms))
+        let userId = socket.decoded.userId
+        new Chat({
+            ChatRoom: {
+                roomName: ChatRoom.name,
+                userId,
+                Encryption: ChatRoom.encryption
+            }
+        }).save((err, res) => {
+            if (err)
+                console.log(err); // hata mesajı fırlatılacak.
+            console.log(res); // chat sayfasına yönlendirme yapılacak
+        });
+    });
+    socket.on("loginChatRoom", (ChatRoom) => {
+        Chat.findOne({ "ChatRoom.roomName": ChatRoom.name }, (err, res) => {
+            if (err)
+                console.log(err); // hata mesajı fırlatılacak;
+            if (res !== null) {
+                socket.emit('goToChat', ChatRoom.name);
+                socket.join(ChatRoom.name, () => {
+                    let userId = socket.decoded.userId;
+                    const roomName = Object.keys(socket.rooms)[1];
+                    console.log(Object.keys(socket.rooms))
+                })
+            } else {
+                console.log(res); // böyle bir oda yok diye mesaj gidebilir.
+            }
         })
-
     })
     socket.on('chatMessage', (chat) => {
         let userId = socket.decoded.userId

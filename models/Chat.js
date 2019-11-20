@@ -2,20 +2,38 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const chatShema = new Schema({
-    userId: {
-        type: Schema.Types.ObjectId,
-        minlength: 8,
-        required: true,
+    ChatRoom: {
+        roomName: {
+            type: String,
+            maxlength: 256,
+            required: true,
+            // unique: true,
+        },
+        userId: {
+            type: Schema.Types.ObjectId,
+            minlength: 8,
+            required: true,
+        },
+        message: {
+            userId: {
+                type: Schema.Types.ObjectId,
+                minlength: 8,
+                // required: true,
+            },
+            msg: {
+                type: String,
+                maxlength: 256,
+            }
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        },
+        Encryption: {
+            type: Object
+        }
     },
-    message: {
-        type: String,
-        maxlength: 256,
-        required: true,
-    },
-    date: {
-        type: Date,
-        default: Date.now
-    }
+
 
 })
 
