@@ -6,6 +6,7 @@ const key = require('../helper/config').JWT_PRIVATE_SECRET_KEY;
 const User = require('../models/User');
 const Chat = require('../models/Chat');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 socketApi.io = Io;
 
 const objectTrim = (object) => {
@@ -112,11 +113,11 @@ Io.of('/Chat').use((socket, next) => {
     socket.on("CreateChatRoom", (ChatRoom) => {
         let userId = socket.decoded.userId
         new Chat({
-            ChatRoom: {
-                roomName: ChatRoom.name,
-                userId,
-                Encryption: ChatRoom.encryption
-            }
+            roomName: ChatRoom.name,
+            userId,
+            Encryption: ChatRoom.encryption,
+            message: {}
+
         }).save((err, res) => {
             if (err)
                 console.log(err); // hata mesajı fırlatılacak.
@@ -124,7 +125,7 @@ Io.of('/Chat').use((socket, next) => {
         });
     });
     socket.on("loginChatRoom", (ChatRoom) => {
-        Chat.findOne({ "ChatRoom.roomName": ChatRoom.name }, (err, res) => {
+        Chat.findOne({ roomName: ChatRoom.name }, (err, res) => {
             if (err)
                 console.log(err); // hata mesajı fırlatılacak;
             if (res !== null) {
@@ -137,84 +138,107 @@ Io.of('/Chat').use((socket, next) => {
             } else {
                 console.log(res); // böyle bir oda yok diye mesaj gidebilir.
             }
-        })
-    })
+        });
+    });
     socket.on('chatMessage', (chat) => {
         let userId = socket.decoded.userId
-        const props = new Chat({
-            userId,
-            message: chat.message
+        let msg = chat.message
+        const props = Chat.findOne({ roomName: chat.roomName }, (err, chat) => {
+            if (err)
+                throw err;
+            chat.message.push({
+                userId: mongoose.Types.ObjectId(userId),
+                msg,
+            })
+            chat.save((err, res) => {
+                if (err)
+                    throw err;
+                Chat.aggregate([
+                    {
+                        $match: { '_id': mongoose.Types.ObjectId(chat._id) }
+                    },
+                    {
+                        $unwind: '$message'
+                    },
+                    {
+
+                        $lookup: {
+                            from: 'users',
+                            localField: 'message.userId',
+                            foreignField: '_id',
+                            as: 'user'
+                        }
+
+                    },
+                    { $sort: { 'message.date': -1 } },
+                    {
+                        $unwind: '$user'
+                    },
+                    {
+                        $project: {
+                            'message._id': 1,
+                            firstname: '$user.firstname',
+                            lastname: '$user.lastname',
+                            'message.msg': 1,
+                            'message.date': { $dateToString: { format: "%H:%m:%S", date: "$message.date" } },
+                            'message.userId': 1,
+                            _id: 0,
+                        }
+                    },
+                    { $limit: 20 },
+                ], (err, chat) => {
+                    if (err)
+                        throw err;
+                    Io.of('/Chat').emit('returnedMessage', { messageInfo: chat.reverse() });
+                })
+            })
         })
-        props.save((err, res) => {
+    })
+    socket.on('allMessage', (chat) => {
+        let userId = socket.decoded.userId
+        const props = Chat.findOne({ roomName: chat.roomName }, (err, chat) => {
             if (err)
                 throw err;
             Chat.aggregate([
                 {
+                    $match: { '_id': mongoose.Types.ObjectId(chat._id) }
+                },
+                {
+                    $unwind: '$message'
+                },
+                {
+
                     $lookup: {
                         from: 'users',
-                        localField: 'userId',
+                        localField: 'message.userId',
                         foreignField: '_id',
                         as: 'user'
                     }
 
                 },
-                { $sort: { date: -1 } },
+                { $sort: { 'message.date': -1 } },
                 {
                     $unwind: '$user'
                 },
                 {
                     $project: {
+                        'message._id': 1,
                         firstname: '$user.firstname',
                         lastname: '$user.lastname',
-                        message: 1,
-                        userId: 1,
-                        date: { $dateToString: { format: "%H:%m:%S", date: "$date" } },
-                        _id: 1
+                        'message.msg': 1,
+                        'message.date': { $dateToString: { format: "%H:%m:%S", date: "$message.date" } },
+                        'message.userId': 1,
+                        _id: 0,
                     }
                 },
                 { $limit: 20 },
             ], (err, chat) => {
                 if (err)
                     throw err;
-                Io.of('/Chat').emit('returnedMessage', { messageInfo: chat.reverse() });
+                socket.emit('returnedMessage', { userId, messageInfo: chat.reverse() });
             })
 
         })
-    })
-    socket.on('allMessage', () => {
-        let userId = socket.decoded.userId
-        Chat.aggregate([
-            {
-
-                $lookup: {
-                    from: 'users',
-                    localField: 'userId',
-                    foreignField: '_id',
-                    as: 'user'
-                }
-
-            },
-            { $sort: { date: -1 } },
-            {
-                $unwind: '$user'
-            },
-            {
-                $project: {
-                    firstname: '$user.firstname',
-                    lastname: '$user.lastname',
-                    message: 1,
-                    userId: 1,
-                    date: { $dateToString: { format: "%H:%m:%S", date: "$date" } },
-                    _id: 1
-                }
-            },
-            { $limit: 20 },
-        ], (err, chat) => {
-            if (err)
-                throw err;
-            socket.emit('returnedMessage', { userId, messageInfo: chat.reverse() });
-        })
-
     })
 })
 

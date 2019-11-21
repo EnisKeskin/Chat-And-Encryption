@@ -13,7 +13,7 @@ class Chat extends Component {
         this.state = {
             getMessage: {},
             redirect: false,
-            userId: '',
+            userId: null,
             props
         }
     }
@@ -21,7 +21,6 @@ class Chat extends Component {
         this.scrollLocation();
         const token = localStorage.getItem('token');
         if (!isNullOrUndefined(token)) {
-
             io = Io.connectionsRoom('Chat', token);
 
             io.on('error', () => {
@@ -29,23 +28,23 @@ class Chat extends Component {
                     redirect: true,
                 });
             });
-            
-            // io.emit('allMessage');
+            const params = this.state.props.match.params
+            io.emit('allMessage', ({ roomName: params.name }));
 
-            // io.on('returnedMessage', (chat) => {
-            //     this.getMessage = chat.messageInfo
-            //     if (chat.userId == null) {
-            //         this.setState({
-            //             getMessage: this.getMessage
-            //         });
-            //     } else {
-            //         this.setState({
-            //             userId: chat.userId,
-            //             getMessage: this.getMessage
-            //         });
-            //     }
-            //     this.scrollLocation();
-            // });
+            io.on('returnedMessage', (chat) => {
+                this.getMessage = chat.messageInfo
+                if (chat.userId == null) {
+                    this.setState({
+                        getMessage: this.getMessage
+                    });
+                } else {
+                    this.setState({
+                        userId: chat.userId,
+                        getMessage: this.getMessage
+                    });
+                }
+                this.scrollLocation();
+            });
 
         } else {
             this.setState({
@@ -62,8 +61,9 @@ class Chat extends Component {
 
     onClickEventSend = (e) => {
         e.preventDefault();
+        const params = this.state.props.match.params
         document.querySelector('.form-control').value = '';
-        io.emit('chatMessage', { message: this.sendMessage });
+        io.emit('chatMessage', { message: this.sendMessage, roomName: params.name });
     }
 
     isEmpty = (obj) => {
@@ -78,21 +78,21 @@ class Chat extends Component {
         const message = this.state.getMessage;
         const chatMessage = [];
         if (!this.isEmpty(message)) {
-            if (message.length > 1) {
+            if (message.length >= 1) {
                 message.forEach((messageInfo, key) => {
-                    if (this.state.userId !== messageInfo.userId) {
+                    if (this.state.userId !== messageInfo.message.userId) {
                         chatMessage.push(
                             <div className="incoming-msg" key={key}>
                                 <div className="incoming-msg-user">{messageInfo.firstname + ' ' + messageInfo.lastname}</div>
-                                <span className="chat-msg-left">{messageInfo.message}</span>
-                                <div className="incoming-msg-date">{messageInfo.date}</div>
+                                <span className="chat-msg-left">{messageInfo.message.msg}</span>
+                                <div className="incoming-msg-date">{messageInfo.message.date}</div>
                             </div>)
                     } else {
                         chatMessage.push(
                             <div className="outgoing-msg" key={key}>
                                 <div className="outgoing-msg-user">{messageInfo.firstname + ' ' + messageInfo.lastname}</div>
-                                <span className="chat-msg">{messageInfo.message}</span>
-                                <div className="outgoing-msg-date">{messageInfo.date}</div>
+                                <span className="chat-msg">{messageInfo.message.msg}</span>
+                                <div className="outgoing-msg-date">{messageInfo.message.date}</div>
                             </div>)
                     }
                 });

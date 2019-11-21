@@ -19,7 +19,7 @@ class App extends Component {
 
           <Route exact path='/' component={Member} />
           <Route exact path='/Lobby' component={Lobby} />
-          <Route exact path='/Chat' component={Chat} />
+          {/* <Route exact path='/Chat' component={Chat} /> */}
           <Route exact path='/Chat/:name' component={Chat} />
           {/* Linklendirme sayesinde hangi odada bulunduğunu ve o odadanın şifrelemesini anında öğrenebileceksin.*/}
 
