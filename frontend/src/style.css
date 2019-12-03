@@ -59,6 +59,7 @@ html, body {
     border-radius: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
+    overflow-wrap: break-word;
 }
 
 .outgoing-msg-user, .outgoing-msg-date, .incoming-msg-user, .incoming-msg-date {
