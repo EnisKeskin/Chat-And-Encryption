@@ -21,7 +21,7 @@ const chatShema = new Schema({
         },
         msg: {
             type: String,
-            maxlength: 256,
+            maxlength: 2500,
         },
         date: {
             type: Date,

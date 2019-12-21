@@ -46,12 +46,14 @@ class Chat extends Component {
                 this.getMessage = chat.messageInfo
                 let messageKey = Object.keys(this.getMessage);
                 let orjinalText
+                let messageInfo
                 messageKey.forEach((key) => {
                     orjinalText = '';
-                    let messageInfo = this.getMessage[key];
+                    messageInfo = this.getMessage[key];
                     orjinalText = this.decode(this.ChatRoomEncryptions, messageInfo.message.msg);
                     messageInfo = { ...messageInfo, message: { ...messageInfo.message, msg: `${orjinalText}` } }
-                    console.log(messageInfo);
+                    this.getMessage[key] = messageInfo
+                    // console.log(this.getMessage)
                 })
 
                 if (chat.userId == null) {
@@ -163,12 +165,6 @@ class Chat extends Component {
                         delete encryptions.Column;
                         break;
 
-                    case "MatrixInserve":
-                        console.log("MatrixInserve")
-                        console.log(encryptedText);
-                        delete encryptions.MatrixInserve;
-                        break;
-
                     case "Polybius":
                         encryptedText = Encryption.Polybius(encryptedText)
                         console.log(encryptedText);
@@ -182,46 +178,46 @@ class Chat extends Component {
             })
 
         }
-
+        console.log(encryptedText)
         return encryptedText;
 
     }
 
     decode = (encryptions, encryptedText) => {
-        let encryptionsKeys = Object.keys(encryptions);
+        let decodeKeys = Object.keys(encryptions).reverse();
         let Encryptions = {};
         Object.assign(Encryptions, encryptions)
-        let orjinalText = '';
-        if (encryptionsKeys) {
-            encryptionsKeys.forEach((encryption) => {
+        let orjinalText = encryptedText;
+        if (decodeKeys) {
+            decodeKeys.forEach((encryption) => {
                 switch (encryption) {
                     case "PicketFence":
-
+                        orjinalText = Encryption.PicketFenceDecode(orjinalText);
+                        console.log(orjinalText);
                         delete encryptions.PicketFence;
                         break;
 
                     case "Ceaser":
-                        orjinalText = Encryption.CeaserDecoding(encryptedText, encryptions.Ceaser.iteration);
+                        orjinalText = Encryption.CeaserDecoding(orjinalText, encryptions.Ceaser.iteration);
+                        console.log(orjinalText);
                         delete encryptions.Ceaser;
                         break;
 
                     case "Vigenere":
-
+                        orjinalText = Encryption.VigenereDecode(orjinalText, encryptions.Vigenere.keyword);
+                        console.log(orjinalText);
                         delete encryptions.Vigenere;
                         break;
 
                     case "Column":
-
+                        orjinalText = Encryption.ColumnarDecode(orjinalText);
+                        console.log(orjinalText);
                         delete encryptions.Column;
                         break;
 
-                    case "MatrixInserve":
-
-                        delete encryptions.MatrixInserve;
-                        break;
-
                     case "Polybius":
-
+                        orjinalText = Encryption.PolybiusDecode(orjinalText);
+                        console.log(orjinalText);
                         delete encryptions.Polybius;
                         break;
 

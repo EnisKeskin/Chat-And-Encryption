@@ -12,12 +12,11 @@ class Lobby extends Component {
             CreateLobbyName: "",
             Ceaser: false,
             CeaserIterator: 1,
-            Polybius: false,
             Vigenere: false,
             VigenereKeyword: "",
             PicketFence: false,
             Column: false,
-            MatrixInserve: false,
+            Polybius: false,
             LoginLobbyName: "",
             roomName: "",
             loginCheck: false,
@@ -52,10 +51,10 @@ class Lobby extends Component {
         let selected = {};
         let state = this.state
         Object.keys(state).forEach((key) => {
-            if (key === 'Ceaser' && state[key] === true) {
-                selected['Ceaser'] = { iteration: state.CeaserIterator };
-            } else if (key === 'Polybius' && state[key] === true) {
+            if (key === 'Polybius' && state[key] === true) {
                 selected['Polybius'] = true;
+            } else if (key === 'Ceaser' && state[key] === true) {
+                selected['Ceaser'] = { iteration: state.CeaserIterator };
             } else if (key === 'Vigenere' && state[key] === true) {
                 selected['Vigenere'] = { keyword: state.VigenereKeyword };
             } else if (key === 'PicketFence' && state[key] === true) {
